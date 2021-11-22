@@ -34,6 +34,7 @@ export default function postcssPlugin (options = {}) {
 		scopeBehaviour: 'local',
 		localsConvention: 'camelCaseOnly',
 		generateScopedName: '[local]_[hash:6]',
+		getJSON () {},
 		...(modules === true ? {} : modules),
 	});
 
