@@ -14,21 +14,12 @@ const RE_MODULE = /.\.module\.[a-z]+$/i;
 
 const VERSION = 1;
 
-const DUMMY_PLUGIN = {
-	postcssPlugin: 'noop',
-	Once () {},
-};
-
 /**
  * @param {object} options
  * @returns {esbuild.Plugin}
  */
 export default function postcssPlugin (options = {}) {
 	const { modules = true, cache = true, plugins = [] } = options;
-
-	if (!plugins.length) {
-		plugins.push(DUMMY_PLUGIN);
-	}
 
 	const modulePlugin = modules && postcssModules({
 		scopeBehaviour: 'local',
