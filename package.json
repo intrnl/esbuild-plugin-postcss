@@ -22,6 +22,6 @@
 	},
 	"devDependencies": {
 		"esbuild": "^0.13.15",
-		"postcss": "^8.4.0"
+		"postcss": "^8.4.1"
 	}
 }
