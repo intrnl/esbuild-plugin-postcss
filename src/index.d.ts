@@ -7,6 +7,6 @@ export default function postcssPlugin (options?: PluginOptions): Plugin;
 
 export interface PluginOptions {
 	cache?: boolean;
-	module?: boolean | Parameters<modules>[0];
+	modules?: boolean | Parameters<modules>[0];
 	plugins?: AcceptedPlugin[];
 }
