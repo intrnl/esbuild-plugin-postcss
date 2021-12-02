@@ -61,7 +61,7 @@ export default function postcssPlugin (options = {}) {
 					? await fsCache.get(filename, key, () => loader(filename, isModule))
 					: await loader(filename, isModule);
 
-				cssCache.set(filename, result.css);
+				cssCache.set(path.relative('.', filename), result.css);
 
 				return {
 					loader: 'js',
@@ -86,7 +86,7 @@ export default function postcssPlugin (options = {}) {
 			build.onResolve({ filter: RE_OUTPUT }, (args) => {
 				const { path: file, importer } = args;
 
-				const dirname = path.dirname(importer);
+				const dirname = path.relative('.', path.dirname(importer));
 				const filename = path.join(dirname, file.slice(0, -10));
 
 				if (!cssCache.has(filename)) {
