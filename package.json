@@ -17,7 +17,7 @@
 		"postcss": "^8.4.0"
 	},
 	"dependencies": {
-		"@intrnl/fs-cache": "^0.1.5",
+		"@intrnl/fs-cache": "^0.2.1",
 		"postcss-modules": "^4.2.2"
 	},
 	"devDependencies": {
