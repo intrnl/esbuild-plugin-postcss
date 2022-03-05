@@ -14,7 +14,7 @@ const RE_CSS = /.\.css$/i;
 const RE_OUTPUT = /.\.css\?__postcss$/i;
 const RE_MODULE = /.\.module\.[a-z]+$/i;
 
-const VERSION = 2;
+const VERSION = 3;
 
 /**
  * @param {object} options
