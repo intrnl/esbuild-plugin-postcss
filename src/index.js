@@ -14,7 +14,7 @@ const RE_CSS = /.\.css$/i;
 const RE_OUTPUT = /.\.css\?__postcss$/i;
 const RE_MODULE = /.\.module\.[a-z]+$/i;
 
-const VERSION = 3;
+const VERSION = 4;
 
 /**
  * @param {object} options
@@ -90,6 +90,7 @@ export default function postcssPlugin (options = {}) {
 			});
 
 			async function loader (filename, isModule) {
+				const dirname = path.dirname(filename);
 				const source = await fs.readFile(filename, 'utf-8');
 
 				const dependencies = [];
@@ -107,7 +108,7 @@ export default function postcssPlugin (options = {}) {
 						async resolve (id) {
 							const result = await build.resolve(id, {
 								importer: filename,
-								resolveDir: path.dirname(filename),
+								resolveDir: dirname,
 							});
 
 							if (result.errors.length > 0) {
@@ -154,7 +155,7 @@ export default function postcssPlugin (options = {}) {
 				let js = '';
 
 				for (let dep of dependencies) {
-					js += `import ${JSON.stringify(dep)};\n`;
+					js += `import ${JSON.stringify(relative(dirname, dep))};\n`;
 				}
 
 				js += `import ${JSON.stringify(path.basename(filename) + '?__postcss')};\n`;
@@ -189,4 +190,14 @@ function traceKeySorter () {
   } else {
     return a < b ? -1 : 1
   }
+}
+
+function relative (from, to) {
+	let result = path.relative(from, to);
+
+	if (result.slice(0, 3) !== '../') {
+		result = './' + result;
+	}
+
+	return result;
 }
