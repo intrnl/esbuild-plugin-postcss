@@ -1,4 +1,6 @@
+@value foo from './colors.module.css';
+
 .button {
 	composes: control from './control.module.css';
-	background-color: red;
+	background-color: foo;
 }
