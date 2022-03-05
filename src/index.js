@@ -91,7 +91,7 @@ export default function postcssPlugin (options = {}) {
 			async function loader (filename, isModule) {
 				const source = await fs.readFile(filename, 'utf-8');
 
-				const processorPlugins = plugins;
+				let processorPlugins = plugins;
 
 				if (isModule) {
 					const mod = postcssModules({
