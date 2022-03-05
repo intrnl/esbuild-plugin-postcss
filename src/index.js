@@ -158,7 +158,7 @@ export default function postcssPlugin (options = {}) {
 					js += `import ${JSON.stringify(relative(dirname, dep))};\n`;
 				}
 
-				js += `import ${JSON.stringify(path.basename(filename) + '?__postcss')};\n`;
+				js += `import ${JSON.stringify(basename(filename) + '?__postcss')};\n`;
 				js += dataToEsm(moduleObj || {});
 
 				return { dependencies, warnings, css, js };
@@ -200,4 +200,8 @@ function relative (from, to) {
 	}
 
 	return result;
+}
+
+function basename (pathname, ext) {
+	return './' + path.basename(pathname, ext);
 }
