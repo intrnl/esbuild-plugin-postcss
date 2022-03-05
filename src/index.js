@@ -153,12 +153,11 @@ export default function postcssPlugin (options = {}) {
 				const css = result.css;
 				let js = '';
 
-				js += `import ${JSON.stringify(path.basename(filename) + '?__postcss')};\n`;
-
 				for (let dep of dependencies) {
 					js += `import ${JSON.stringify(dep)};\n`;
 				}
 
+				js += `import ${JSON.stringify(path.basename(filename) + '?__postcss')};\n`;
 				js += dataToEsm(moduleObj || {});
 
 				return { dependencies, warnings, css, js };
