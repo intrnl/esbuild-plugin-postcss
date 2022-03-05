@@ -182,11 +182,11 @@ function createLoader (dependencies) {
 	}
 }
 
-function traceKeySorter () {
-	if ( a.length < b.length ) {
-    return a < b.substring( 0, a.length ) ? -1 : 1
+function traceKeySorter (a, b) {
+	if (a.length < b.length) {
+    return a < b.substring(0, a.length) ? -1 : 1
   } else if ( a.length > b.length ) {
-    return a.substring( 0, b.length ) <= b ? -1 : 1
+    return a.substring(0, b.length) <= b ? -1 : 1
   } else {
     return a < b ? -1 : 1
   }
