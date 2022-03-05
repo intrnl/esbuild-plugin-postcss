@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as esbuild from 'esbuild';
 import postcss from 'postcss';
 import postcssModules from 'postcss-modules';
+import fsLoader from 'postcss-modules/build/css-loader-core/loader.js'
 
 import { FSCache, getProjectRoot } from '@intrnl/fs-cache';
 import { dataToEsm } from './data.js';
@@ -91,6 +92,9 @@ export default function postcssPlugin (options = {}) {
 			async function loader (filename, isModule) {
 				const source = await fs.readFile(filename, 'utf-8');
 
+				const dependencies = [];
+				let moduleObj;
+
 				let processorPlugins = plugins;
 
 				if (isModule) {
@@ -98,6 +102,7 @@ export default function postcssPlugin (options = {}) {
 						scopeBehavior: 'local',
 						localsConvention: 'camelCaseOnly',
 						generateScopedName: '[local]_[hash:6]',
+						Loader: createLoader(dependencies),
 						getJSON () {},
 						async resolve (id) {
 							const result = await build.resolve(id, {
@@ -122,9 +127,6 @@ export default function postcssPlugin (options = {}) {
 				const result = await processor.process(source, { from: filename });
 
 				// Retrieve module exports for CSS modules and any file dependencies
-				const dependencies = [];
-				let moduleObj;
-
 				for (const message of result.messages) {
 					if (message.type === 'dependency') {
 						dependencies.push(message.file);
@@ -149,13 +151,43 @@ export default function postcssPlugin (options = {}) {
 
 				// Resulting output
 				const css = result.css;
-				const js = `
-					import ${JSON.stringify(path.basename(filename) + '?__postcss')};
-					${dataToEsm(moduleObj || {})}
-				`;
+				let js = '';
+
+				js += `import ${JSON.stringify(path.basename(filename) + '?__postcss')};\n`;
+
+				for (let dep of dependencies) {
+					js += `import ${JSON.stringify(dep)};\n`;
+				}
+
+				js += dataToEsm(moduleObj || {});
 
 				return { dependencies, warnings, css, js };
 			}
 		},
 	};
+}
+
+function createLoader (dependencies) {
+	return class FSLoader extends fsLoader.default {
+		get finalSource () {
+			const traces = this.traces;
+
+			for (let key of Object.keys(traces).sort(traceKeySorter)) {
+				const filename = traces[key];
+				dependencies.push(filename);
+			}
+
+			return null;
+		}
+	}
+}
+
+function traceKeySorter () {
+	if ( a.length < b.length ) {
+    return a < b.substring( 0, a.length ) ? -1 : 1
+  } else if ( a.length > b.length ) {
+    return a.substring( 0, b.length ) <= b ? -1 : 1
+  } else {
+    return a < b ? -1 : 1
+  }
 }
