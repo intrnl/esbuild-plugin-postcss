@@ -1,0 +1,4 @@
+.button {
+	composes: control from './control.module.css';
+	background-color: red;
+}
