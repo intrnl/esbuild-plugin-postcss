@@ -4,6 +4,7 @@ import postcss from '../src/index.js';
 
 await esbuild.build({
 	bundle: true,
+	format: 'esm',
 	entryPoints: ['./index.js'],
 	outdir: 'dist/',
 

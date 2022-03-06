@@ -2,16 +2,16 @@
 	border-radius: 4px;
 }
 
-.is-start {
+.isStart {
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 }
 
-.is-middle {
+.isMiddle {
 	border-radius: 0;
 }
 
-.is-end {
+.isEnd {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
