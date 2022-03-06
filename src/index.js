@@ -12,7 +12,7 @@ const RE_CSS = /.\.css$/i;
 const RE_OUTPUT = /.\.css\?__postcss$/i;
 const RE_MODULE = /.\.module\.[a-z]+$/i;
 
-const VERSION = 5;
+const VERSION = 6;
 
 /**
  * @param {object} options
@@ -134,8 +134,6 @@ export default function postcssPlugin (options = {}) {
 					jsd += `import ${JSON.stringify(relative(dirname, dep))};\n`;
 				}
 
-				jsd += `import ${JSON.stringify(basename(filename) + '?__postcss')};\n`;
-
 				const seen = new Set();
 				const moduleDeps = new Map();
 				let depCount = 0;
@@ -186,6 +184,8 @@ export default function postcssPlugin (options = {}) {
 				}
 
 				jss += `export default o;\n`;
+
+				jsd += `import ${JSON.stringify(basename(filename) + '?__postcss')};\n`;
 
 				const js = jsd + jss;
 
