@@ -2,7 +2,7 @@
 	"type": "module",
 	"name": "@intrnl/esbuild-plugin-postcss",
 	"description": "PostCSS transformation on esbuild",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"author": "intrnl",
 	"license": "MIT",
 	"repository": {
@@ -18,10 +18,10 @@
 	},
 	"dependencies": {
 		"@intrnl/fs-cache": "^0.2.3",
-		"@intrnl/postcss-modules": "^0.2.0"
+		"@intrnl/postcss-modules": "^0.2.3"
 	},
 	"devDependencies": {
-		"esbuild": "^0.14.25",
-		"postcss": "^8.4.7"
+		"esbuild": "^0.14.39",
+		"postcss": "^8.4.13"
 	}
 }

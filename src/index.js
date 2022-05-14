@@ -21,15 +21,18 @@ const VERSION = 6;
 export default function postcssPlugin (options = {}) {
 	const { modules = true, cache = true, plugins = [] } = options;
 
-	const modulesPlugin = modules && postcssModules({
-		...(modules === true ? null : modules),
-	});
-
 	return {
 		name: '@intrnl/esbuild-plugin-postcss',
 		async setup (build) {
 			const fsCache = cache && new FSCache({
 				...await getProjectRoot('@intrnl/esbuild-plugin-postcss'),
+			});
+
+			const modulesPlugin = modules && postcssModules({
+				generateScopedName: build.initialOptions.minify
+					? postcssModules.generateShortScopedName
+					: postcssModules.generateLongScopedName,
+				...(modules === true ? null : modules),
 			});
 
 			const cssCache = new Map();
