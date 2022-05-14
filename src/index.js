@@ -75,6 +75,7 @@ export default function postcssPlugin (options = {}) {
 					loader: 'css',
 					contents: css,
 					warnings,
+					resolveDir: path.dirname(filename),
 				};
 			});
 
