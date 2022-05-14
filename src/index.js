@@ -21,6 +21,8 @@ const VERSION = 6;
 export default function postcssPlugin (options = {}) {
 	const { modules = true, cache = true, plugins = [] } = options;
 
+	const hasPlugins = plugins.length > 0;
+
 	return {
 		name: '@intrnl/esbuild-plugin-postcss',
 		async setup (build) {
@@ -45,6 +47,11 @@ export default function postcssPlugin (options = {}) {
 				}
 
 				const isModule = modules && RE_MODULE.test(filename);
+
+				// We have no plugins configured, and we're not a CSS module, skip...
+				if (!hasPlugins && !isModule) {
+					return null;
+				}
 
 				const key = [
 					VERSION,
