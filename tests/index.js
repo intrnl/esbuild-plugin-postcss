@@ -1,5 +1,5 @@
-import buttonStyles from './button.module.css';
-import controlStyles from './control.module.css';
+import { button } from './button.module.css';
+import { control } from './control.module.css';
 
-console.log(buttonStyles.button);
-console.log(controlStyles.control);
+console.log(button);
+console.log(control);

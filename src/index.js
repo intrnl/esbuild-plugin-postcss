@@ -7,6 +7,8 @@ import postcssModules from '@intrnl/postcss-modules';
 
 import { FSCache, getProjectRoot } from '@intrnl/fs-cache';
 
+import { exportFormat, objFormat } from './modules.js';
+
 
 const RE_CSS = /.\.css$/i;
 const RE_OUTPUT = /.\.css\?__postcss$/i;
@@ -19,7 +21,12 @@ const VERSION = 6;
  * @returns {esbuild.Plugin}
  */
 export default function postcssPlugin (options = {}) {
-	const { modules = true, cache = true, plugins = [] } = options;
+	const {
+		modules = true,
+		modulesNamedExports = false,
+		cache = true,
+		plugins = [],
+	} = options;
 
 	const hasPlugins = plugins.length > 0;
 
@@ -103,7 +110,6 @@ export default function postcssPlugin (options = {}) {
 			});
 
 			async function loader (filename, isModule) {
-				const dirname = path.dirname(filename);
 				const source = await fs.readFile(filename, 'utf-8');
 
 				const processor = postcss(isModule ? [...plugins, modulesPlugin] : plugins);
@@ -111,14 +117,14 @@ export default function postcssPlugin (options = {}) {
 
 				// Retrieve module exports for CSS modules and any file dependencies
 				const dependencies = [];
-				let moduleObj;
+				let definitions;
 
 				for (const message of result.messages) {
 					if (message.type === 'dependency') {
 						dependencies.push(message.file);
 					}
 					else if (message.type === 'export-locals') {
-						moduleObj = message.locals;
+						definitions = message.locals;
 					}
 				}
 
@@ -138,84 +144,13 @@ export default function postcssPlugin (options = {}) {
 				// Resulting output
 				const css = result.css;
 
-				let jsd = '';
-				let jss = '';
-
-				for (let dep of dependencies) {
-					jsd += `import ${JSON.stringify(relative(dirname, dep))};\n`;
-				}
-
-				const seen = new Set();
-				const moduleDeps = new Map();
-				let depCount = 0;
-
-				const add = (key) => {
-					if (seen.has(key)) {
-						return;
-					}
-
-					seen.add(key);
-
-					const dec = moduleObj[key];
-					let s = `o[${JSON.stringify(key)}] = \`${dec.local}`;
-
-					for (const ref of dec.composes) {
-						s += ' ';
-
-						if (ref.type === 'local') {
-							add(ref.name);
-
-							s += `\${o[${JSON.stringify(ref.name)}]}`;
-						}
-						else if (ref.type === 'global') {
-							s += ref.name;
-						}
-						else if (ref.type === 'dependency') {
-							let d = moduleDeps.get(ref.specifier);
-
-							if (d == null) {
-								d = 'd' + (depCount++);
-								jsd += `import ${d} from ${JSON.stringify(ref.specifier)}\n`;
-
-								moduleDeps.set(ref.specifier, d);
-							}
-
-							s += `\${${d}[${JSON.stringify(ref.name)}]}`;
-						}
-					}
-
-					s += '`;\n';
-					jss += s;
-				};
-
-				jss += `const o = {};\n`;
-
-				for (const key in moduleObj) {
-					add(key);
-				}
-
-				jss += `export default o;\n`;
-
-				jsd += `import ${JSON.stringify(basename(filename) + '?__postcss')};\n`;
-
-				const js = jsd + jss;
+				const jsOptions = { filename, dependencies, definitions };
+				const js = modulesNamedExports
+					? exportFormat(jsOptions)
+					: objFormat(jsOptions);
 
 				return { dependencies, warnings, css, js };
 			}
 		},
 	};
-}
-
-function relative (from, to) {
-	let result = path.relative(from, to);
-
-	if (result.slice(0, 3) !== '../') {
-		result = './' + result;
-	}
-
-	return result;
-}
-
-function basename (pathname, ext) {
-	return './' + path.basename(pathname, ext);
 }

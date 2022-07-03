@@ -13,6 +13,7 @@ await esbuild.build({
 	plugins: [
 		postcss({
 			cache: false,
+			modulesNamedExports: true,
 		}),
 	],
 });
