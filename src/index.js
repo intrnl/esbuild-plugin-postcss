@@ -63,6 +63,7 @@ export default function postcssPlugin (options = {}) {
 				const key = [
 					VERSION,
 					isModule && modules,
+					isModule && modulesNamedExports,
 					plugins.map((plugin) => plugin?.postcssPlugin),
 				];
 
